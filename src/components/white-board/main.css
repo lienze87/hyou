@@ -1,0 +1,18 @@
+.white-board {
+  position: relative;
+}
+
+.action-bar {
+  margin-bottom: 20px;
+}
+
+.white-board-content {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+#my-canvas {
+  cursor: crosshair;
+}
