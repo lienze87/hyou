@@ -1,0 +1,32 @@
+.white-board {
+  position: relative;
+}
+
+.action-bar {
+  margin-bottom: 20px;
+}
+
+.white-board-content {
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+#my-canvas {
+  cursor: crosshair;
+}
+
+.point-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: red;
+}
