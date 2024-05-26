@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
-import { Button } from "antd";
+import type { RadioChangeEvent } from "antd";
+import { Button, Radio } from "antd";
 import "./main.css";
 
 const BACKGROUND_COLOR = "#274c43";
@@ -8,9 +9,29 @@ const PEN_COLOR = "#ffffff";
 const CONTROL_POINT_RADIUS = 10;
 
 type Line = {
+  type: "line";
   key: string;
   begin: { x: number; y: number };
   end: { x: number; y: number };
+  colors: string[];
+  active: boolean;
+};
+
+type Circle = {
+  type: "circle";
+  key: string;
+  begin: { x: number; y: number };
+  radius: number;
+  colors: string[];
+  active: boolean;
+};
+
+type Rect = {
+  type: "rect";
+  key: string;
+  begin: { x: number; y: number };
+  width: number;
+  height: number;
   colors: string[];
   active: boolean;
 };
@@ -36,7 +57,10 @@ function rgbToHex(r: number, g: number, b: number) {
 }
 
 export default function MainApp() {
-  const [lineList, updateLineList] = useImmer<Array<Line>>([]);
+  const [shapeType, setShapeType] = useState("line");
+  const [shapeList, updateShapeList] = useImmer<Array<Line | Circle | Rect>>(
+    []
+  );
   const [data, updateData] = useImmer({
     status: "drawEnd",
     canvasWidth: 640,
@@ -51,9 +75,9 @@ export default function MainApp() {
   const myCanvas = useRef<HTMLCanvasElement | null>(null);
   const ctx = useRef<CanvasRenderingContext2D | null>(null);
 
-  function drawLine(ctx: CanvasRenderingContext2D | null, point: Line) {
+  function drawLine(ctx: CanvasRenderingContext2D | null, shape: Line) {
     if (!ctx) return;
-    const { begin, end, colors } = point;
+    const { begin, end, colors } = shape;
 
     ctx.beginPath();
     ctx.moveTo(begin.x, begin.y);
@@ -72,6 +96,32 @@ export default function MainApp() {
     ctx.arc(end.x, end.y, CONTROL_POINT_RADIUS, 0, Math.PI * 2, true);
     ctx.fillStyle = colors[1];
     ctx.fill();
+
+    ctx.closePath();
+  }
+
+  function drawCircle(ctx: CanvasRenderingContext2D | null, shape: Circle) {
+    if (!ctx) return;
+    const { begin, radius } = shape;
+
+    ctx.beginPath();
+    ctx.arc(begin.x, begin.y, radius, 0, Math.PI * 2, true);
+    ctx.strokeStyle = data.strokeStyle;
+    ctx.stroke();
+
+    ctx.closePath();
+  }
+
+  function drawRect(ctx: CanvasRenderingContext2D | null, shape: Rect) {
+    if (!ctx) return;
+    const {
+      begin: { x, y },
+      width,
+      height,
+    } = shape;
+
+    ctx.strokeStyle = data.strokeStyle;
+    ctx.strokeRect(x, y, width, height);
 
     ctx.closePath();
   }
@@ -128,47 +178,90 @@ export default function MainApp() {
       if (this.isDown) {
         this.current = getMousePosition(evt);
 
-        let line = {
-          key: "move",
-          begin: this.down,
-          end: this.current,
-          colors: [this.downColor, this.upColor],
-          active: false,
-        };
+        if (shapeType === "line") {
+          let line: Line = {
+            type: "line",
+            key: "move",
+            begin: this.down,
+            end: this.current,
+            colors: [this.downColor, this.upColor],
+            active: false,
+          };
+          updateShapeList((draft) => {
+            let targetLineIndex = -1;
 
-        updateLineList((draft) => {
-          let targetLineIndex = -1;
-          const activeLineIndex = draft.findIndex((item) => item.active);
-          if (this.pickColor !== BACKGROUND_COLOR) {
-            setCursorType("grabbing");
-            if (activeLineIndex === -1) {
-              targetLineIndex = draft.findIndex((item) =>
-                item.colors.includes(this.pickColor)
-              );
-            } else {
-              targetLineIndex = activeLineIndex;
-            }
+            const activeLineIndex = draft.findIndex(
+              (item) => item.type === "line" && item.active
+            );
+            if (this.pickColor !== BACKGROUND_COLOR) {
+              setCursorType("grabbing");
+              if (activeLineIndex === -1) {
+                targetLineIndex = draft.findIndex(
+                  (item) =>
+                    item.type === "line" && item.colors.includes(this.pickColor)
+                );
+              } else {
+                targetLineIndex = activeLineIndex;
+              }
 
-            if (targetLineIndex !== -1) {
-              if (this.pickColor === draft[targetLineIndex].colors[0]) {
+              if (
+                targetLineIndex !== -1 &&
+                draft[targetLineIndex].type === "line"
+              ) {
+                const data = draft[targetLineIndex] as Line;
                 line = {
-                  ...draft[targetLineIndex],
-                  begin: this.current,
-                  active: true,
-                };
-              } else if (this.pickColor === draft[targetLineIndex].colors[1]) {
-                line = {
-                  ...draft[targetLineIndex],
-                  end: this.current,
+                  ...data,
+                  type: "line",
+                  begin:
+                    data.colors.indexOf(this.pickColor) === 0
+                      ? this.current
+                      : data.begin,
+                  end:
+                    data.colors.indexOf(this.pickColor) === 1
+                      ? this.current
+                      : data.end,
                   active: true,
                 };
               }
             }
-          }
 
-          // draft.splice(-1, 1, line);替换最后一个元素
-          draft.splice(targetLineIndex, 1, line);
-        });
+            // draft.splice(-1, 1, line);替换最后一个元素
+            draft.splice(targetLineIndex, 1, line);
+          });
+        } else if (shapeType === "circle") {
+          const radius = Math.sqrt(
+            (this.current.x - this.down.x) ** 2 +
+              (this.current.y - this.down.y) ** 2
+          );
+          const circle: Circle = {
+            key: "move",
+            type: "circle",
+            begin: this.down,
+            radius,
+            colors: [],
+            active: false,
+          };
+          updateShapeList((draft) => {
+            const targetLineIndex = -1;
+
+            draft.splice(targetLineIndex, 1, circle);
+          });
+        } else if (shapeType === "rect") {
+          const rect: Rect = {
+            key: "move",
+            type: "rect",
+            begin: this.down,
+            width: this.current.x - this.down.x,
+            height: this.current.y - this.down.y,
+            colors: [],
+            active: false,
+          };
+          updateShapeList((draft) => {
+            const targetLineIndex = -1;
+
+            draft.splice(targetLineIndex, 1, rect);
+          });
+        }
       }
     },
     mouseup: function (evt: MouseEvent) {
@@ -177,20 +270,50 @@ export default function MainApp() {
       this.up = getMousePosition(evt);
 
       if (this.pickColor !== BACKGROUND_COLOR) {
-        updateLineList((draft) => {
-          draft.forEach((ele: Line) => (ele.active = false));
+        updateShapeList((draft) => {
+          draft.forEach((ele) => (ele.active = false));
         });
       } else {
-        const line = {
-          key: "end",
-          begin: this.down,
-          end: this.up,
-          colors: [this.downColor, this.upColor],
-          active: false,
-        };
+        updateShapeList((draft) => {
+          if (shapeType === "line") {
+            const line: Line = {
+              type: "line",
+              key: "end",
+              begin: this.down,
+              end: this.current,
+              colors: [this.downColor, this.upColor],
+              active: false,
+            };
 
-        updateLineList((draft) => {
-          draft.push(line);
+            draft.push(line);
+          } else if (shapeType === "circle") {
+            const radius = Math.sqrt(
+              (this.current.x - this.down.x) ** 2 +
+                (this.current.y - this.down.y) ** 2
+            );
+            const circle: Circle = {
+              key: "end",
+              type: "circle",
+              begin: this.down,
+              radius,
+              colors: [],
+              active: false,
+            };
+
+            draft.push(circle);
+          } else if (shapeType === "rect") {
+            const rect: Rect = {
+              key: "end",
+              type: "rect",
+              begin: this.down,
+              width: this.current.x - this.down.x,
+              height: this.current.y - this.down.y,
+              colors: [],
+              active: false,
+            };
+
+            draft.push(rect);
+          }
         });
       }
 
@@ -222,40 +345,53 @@ export default function MainApp() {
       ctx.current = canvas.getContext("2d");
 
       handleReset();
-
-      // Mouse Events
-      canvas.addEventListener("mousedown", mouseDraw.mousedown, false);
-      canvas.addEventListener("mouseup", mouseDraw.mouseup, false);
-      canvas.addEventListener("mousemove", mouseDraw.mousemove, false);
-      canvas.addEventListener("mouseleave", mouseDraw.mouseleave, false);
-
-      return () => {
-        canvas.removeEventListener("mousedown", mouseDraw.mousedown, false);
-        canvas.removeEventListener("mouseup", mouseDraw.mouseup, false);
-        canvas.removeEventListener("mousemove", mouseDraw.mousemove, false);
-        canvas.removeEventListener("mouseleave", mouseDraw.mouseleave, false);
-      };
     }
   }, []);
+
+  useEffect(() => {
+    if (!myCanvas.current) return;
+    const canvas = myCanvas.current;
+    // Mouse Events
+    canvas.addEventListener("mousedown", mouseDraw.mousedown, false);
+    canvas.addEventListener("mouseup", mouseDraw.mouseup, false);
+    canvas.addEventListener("mousemove", mouseDraw.mousemove, false);
+    canvas.addEventListener("mouseleave", mouseDraw.mouseleave, false);
+    return () => {
+      canvas.removeEventListener("mousedown", mouseDraw.mousedown, false);
+      canvas.removeEventListener("mouseup", mouseDraw.mouseup, false);
+      canvas.removeEventListener("mousemove", mouseDraw.mousemove, false);
+      canvas.removeEventListener("mouseleave", mouseDraw.mouseleave, false);
+    };
+  }, [shapeType]);
 
   useEffect(() => {
     if (!ctx.current) return;
     ctx.current.fillStyle = data.fillStyle;
     ctx.current.fillRect(0, 0, data.canvasWidth, data.canvasWidth);
 
-    lineList.forEach((line) => {
-      if (line.key !== "end") {
-        drawLine(ctx.current, line);
+    shapeList.forEach((shape) => {
+      if (shape.key !== "end") {
+        if (shape.type === "line") {
+          drawLine(ctx.current, shape);
+        } else if (shape.type === "circle") {
+          drawCircle(ctx.current, shape);
+        } else if (shape.type === "rect") {
+          drawRect(ctx.current, shape);
+        }
       }
     });
-  }, [lineList]);
+  }, [shapeList]);
 
   const handleReset = () => {
     if (!ctx.current) return;
     ctx.current.fillStyle = data.fillStyle;
     ctx.current.strokeStyle = data.strokeStyle;
     ctx.current.fillRect(0, 0, data.canvasWidth, data.canvasHeight);
-    updateLineList(() => []);
+    updateShapeList(() => []);
+  };
+
+  const onChangeShapeType = (e: RadioChangeEvent) => {
+    setShapeType(e.target.value);
   };
 
   return (
@@ -266,6 +402,14 @@ export default function MainApp() {
           <Button type="primary" onClick={handleReset}>
             重置
           </Button>
+          <Radio.Group
+            onChange={onChangeShapeType}
+            value={shapeType}
+            buttonStyle="solid">
+            <Radio.Button value={"line"}>line</Radio.Button>
+            <Radio.Button value={"circle"}>circle</Radio.Button>
+            <Radio.Button value={"rect"}>rect</Radio.Button>
+          </Radio.Group>
         </div>
         <div className="white-board-content" ref={myWhiteBoard}>
           <canvas
