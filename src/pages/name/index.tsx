@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Form, Button, Input, Checkbox, Radio } from "antd";
-
 import "./main.css";
 
-import { singleSurname, doubleSurname } from "@/assets/surname";
+import { Button, Checkbox, Form, Input, Radio } from "antd";
+import { useState } from "react";
+
+import { doubleSurname, singleSurname } from "@/assets/surname";
 
 export default function NameGenerator() {
   const [surname, setSurname] = useState("");
@@ -29,9 +29,7 @@ export default function NameGenerator() {
     // 汉字范围 \u4e00 ~ \u9fa5 共20902个字符
     let generatedText = "";
     for (let i = 0; i < length; i++) {
-      const randomUnicode = Math.floor(
-        Math.random() * (40870 - 19968) + 19968
-      ).toString(16);
+      const randomUnicode = Math.floor(Math.random() * (40870 - 19968) + 19968).toString(16);
       const character = String.fromCharCode(parseInt(`0x${randomUnicode}`, 16));
       generatedText += character;
     }
@@ -63,30 +61,31 @@ export default function NameGenerator() {
     if (!nameFixed || name === "") {
       setName(getRandomUnicode(Number(nameType)));
     }
+    // never execute
+    if (Math.random() > 1) {
+      setName(getRandomGB2312(Number(nameType)));
+    }
   }
 
   return (
     <div className="container">
       <h2>姓名生成器</h2>
-      <Form
-        name="basic"
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 20 }}
-        style={{ maxWidth: 600 }}
-        autoComplete="off">
+      <Form name="basic" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} style={{ maxWidth: 600 }} autoComplete="off">
         <Form.Item label="固定字符">
           <Checkbox
             checked={surnameFixed}
             onChange={(event: any) => {
               setSurnameFixed(event.target.checked);
-            }}>
+            }}
+          >
             固定姓氏
           </Checkbox>
           <Checkbox
             checked={nameFixed}
             onChange={(event: any) => {
               setNameFixed(event.target.checked);
-            }}>
+            }}
+          >
             固定名称
           </Checkbox>
         </Form.Item>
@@ -95,7 +94,8 @@ export default function NameGenerator() {
             onChange={(event: any) => {
               setSurnameType(event.target.value);
             }}
-            value={surnameType}>
+            value={surnameType}
+          >
             <Radio value={1}>单姓</Radio>
             <Radio value={2}>复姓</Radio>
           </Radio.Group>
@@ -105,7 +105,8 @@ export default function NameGenerator() {
             onChange={(event: any) => {
               setNameType(event.target.value);
             }}
-            value={nameType}>
+            value={nameType}
+          >
             <Radio value={1}>单字</Radio>
             <Radio value={2}>双字</Radio>
           </Radio.Group>
@@ -116,7 +117,8 @@ export default function NameGenerator() {
             onChange={(event) => {
               setSurname(event.target.value);
             }}
-            autoComplete="off"></Input>
+            autoComplete="off"
+          ></Input>
         </Form.Item>
         <Form.Item label="名称">
           <Input

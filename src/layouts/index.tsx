@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-
 import { Layout, Menu } from "antd";
-import { Link, useLocation, Outlet } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 const { Header, Content } = Layout;
 
@@ -30,7 +29,8 @@ const App: React.FC = () => {
           mode="horizontal"
           defaultSelectedKeys={[activePath]}
           items={navList}
-          style={{ flex: 1, minWidth: 0 }}></Menu>
+          style={{ flex: 1, minWidth: 0 }}
+        ></Menu>
       </Header>
       <Content style={{ padding: "0 48px" }}>
         <Outlet />

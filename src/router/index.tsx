@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
+
 import App from "@/layouts/index";
 import Board from "@/pages/board";
 import Name from "@/pages/name";

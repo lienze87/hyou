@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { useImmer } from "use-immer";
+import "./main.css";
+
 import type { RadioChangeEvent } from "antd";
 import { Button, Radio } from "antd";
-import "./main.css";
+import { useEffect, useRef, useState } from "react";
+import { useImmer } from "use-immer";
 
 const BACKGROUND_COLOR = "#274c43";
 const PEN_COLOR = "#ffffff";
@@ -50,17 +51,19 @@ function oppositeColor(color: string) {
 }
 
 function rgbToHex(r: number, g: number, b: number) {
-  if (r > 255 || g > 255 || b > 255) throw "Invalid color component";
+  if (r > 255 || g > 255 || b > 255) {
+    throw new Error("Invalid color component");
+  }
+
+  // eslint-disable-next-line no-bitwise
   const hex = ((r << 16) | (g << 8) | b).toString(16);
 
-  return "#" + ("000000" + hex).slice(-6);
+  return `#${`000000${hex}`.slice(-6)}`;
 }
 
 export default function MainApp() {
   const [shapeType, setShapeType] = useState("line");
-  const [shapeList, updateShapeList] = useImmer<Array<Line | Circle | Rect>>(
-    []
-  );
+  const [shapeList, updateShapeList] = useImmer<Array<Line | Circle | Rect>>([]);
   const [data, updateData] = useImmer({
     status: "drawEnd",
     canvasWidth: 640,
@@ -85,16 +88,17 @@ export default function MainApp() {
     ctx.strokeStyle = data.strokeStyle;
     ctx.stroke();
 
+    const [color1, color2] = colors;
     // 绘制控制点
     ctx.beginPath();
     ctx.arc(begin.x, begin.y, CONTROL_POINT_RADIUS, 0, Math.PI * 2, true);
-    ctx.fillStyle = colors[0];
+    ctx.fillStyle = color1;
     ctx.fill();
 
     // 绘制控制点
     ctx.beginPath();
     ctx.arc(end.x, end.y, CONTROL_POINT_RADIUS, 0, Math.PI * 2, true);
-    ctx.fillStyle = colors[1];
+    ctx.fillStyle = color2;
     ctx.fill();
 
     ctx.closePath();
@@ -147,7 +151,7 @@ export default function MainApp() {
     down: { x: 0, y: 0 },
     current: { x: 0, y: 0 },
     up: { x: 0, y: 0 },
-    mousedown: function (evt: MouseEvent) {
+    mousedown(evt: MouseEvent) {
       this.isDown = true;
 
       this.down = getMousePosition(evt);
@@ -159,12 +163,7 @@ export default function MainApp() {
 
       // 存储选中的控制点颜色
       if (ctx.current) {
-        const pickColor = ctx.current.getImageData(
-          this.down.x,
-          this.down.y,
-          1,
-          1
-        ).data;
+        const pickColor = ctx.current.getImageData(this.down.x, this.down.y, 1, 1).data;
 
         this.pickColor = rgbToHex(pickColor[0], pickColor[1], pickColor[2]);
         if (this.pickColor !== BACKGROUND_COLOR) {
@@ -174,7 +173,7 @@ export default function MainApp() {
         }
       }
     },
-    mousemove: function (evt: MouseEvent) {
+    mousemove(evt: MouseEvent) {
       if (this.isDown) {
         this.current = getMousePosition(evt);
 
@@ -190,36 +189,24 @@ export default function MainApp() {
           updateShapeList((draft) => {
             let targetLineIndex = -1;
 
-            const activeLineIndex = draft.findIndex(
-              (item) => item.type === "line" && item.active
-            );
+            const activeLineIndex = draft.findIndex((item) => item.type === "line" && item.active);
             if (this.pickColor !== BACKGROUND_COLOR) {
               setCursorType("grabbing");
               if (activeLineIndex === -1) {
                 targetLineIndex = draft.findIndex(
-                  (item) =>
-                    item.type === "line" && item.colors.includes(this.pickColor)
+                  (item) => item.type === "line" && item.colors.includes(this.pickColor),
                 );
               } else {
                 targetLineIndex = activeLineIndex;
               }
 
-              if (
-                targetLineIndex !== -1 &&
-                draft[targetLineIndex].type === "line"
-              ) {
+              if (targetLineIndex !== -1 && draft[targetLineIndex].type === "line") {
                 const data = draft[targetLineIndex] as Line;
                 line = {
                   ...data,
                   type: "line",
-                  begin:
-                    data.colors.indexOf(this.pickColor) === 0
-                      ? this.current
-                      : data.begin,
-                  end:
-                    data.colors.indexOf(this.pickColor) === 1
-                      ? this.current
-                      : data.end,
+                  begin: data.colors.indexOf(this.pickColor) === 0 ? this.current : data.begin,
+                  end: data.colors.indexOf(this.pickColor) === 1 ? this.current : data.end,
                   active: true,
                 };
               }
@@ -229,10 +216,7 @@ export default function MainApp() {
             draft.splice(targetLineIndex, 1, line);
           });
         } else if (shapeType === "circle") {
-          const radius = Math.sqrt(
-            (this.current.x - this.down.x) ** 2 +
-              (this.current.y - this.down.y) ** 2
-          );
+          const radius = Math.sqrt((this.current.x - this.down.x) ** 2 + (this.current.y - this.down.y) ** 2);
           const circle: Circle = {
             key: "move",
             type: "circle",
@@ -264,14 +248,16 @@ export default function MainApp() {
         }
       }
     },
-    mouseup: function (evt: MouseEvent) {
+    mouseup(evt: MouseEvent) {
       this.isDown = false;
 
       this.up = getMousePosition(evt);
 
       if (this.pickColor !== BACKGROUND_COLOR) {
         updateShapeList((draft) => {
-          draft.forEach((ele) => (ele.active = false));
+          draft.forEach((ele) => {
+            ele.active = false;
+          });
         });
       } else {
         updateShapeList((draft) => {
@@ -287,10 +273,7 @@ export default function MainApp() {
 
             draft.push(line);
           } else if (shapeType === "circle") {
-            const radius = Math.sqrt(
-              (this.current.x - this.down.x) ** 2 +
-                (this.current.y - this.down.y) ** 2
-            );
+            const radius = Math.sqrt((this.current.x - this.down.x) ** 2 + (this.current.y - this.down.y) ** 2);
             const circle: Circle = {
               key: "end",
               type: "circle",
@@ -320,9 +303,17 @@ export default function MainApp() {
       this.pickColor = "";
       setCursorType("crosshair");
     },
-    mouseleave: function () {
+    mouseleave() {
       this.isDown = false;
     },
+  };
+
+  const handleReset = () => {
+    if (!ctx.current) return;
+    ctx.current.fillStyle = data.fillStyle;
+    ctx.current.strokeStyle = data.strokeStyle;
+    ctx.current.fillRect(0, 0, data.canvasWidth, data.canvasHeight);
+    updateShapeList(() => []);
   };
 
   useEffect(() => {
@@ -349,7 +340,7 @@ export default function MainApp() {
   }, []);
 
   useEffect(() => {
-    if (!myCanvas.current) return;
+    if (!myCanvas.current) return () => null;
     const canvas = myCanvas.current;
     // Mouse Events
     canvas.addEventListener("mousedown", mouseDraw.mousedown, false);
@@ -382,14 +373,6 @@ export default function MainApp() {
     });
   }, [shapeList]);
 
-  const handleReset = () => {
-    if (!ctx.current) return;
-    ctx.current.fillStyle = data.fillStyle;
-    ctx.current.strokeStyle = data.strokeStyle;
-    ctx.current.fillRect(0, 0, data.canvasWidth, data.canvasHeight);
-    updateShapeList(() => []);
-  };
-
   const onChangeShapeType = (e: RadioChangeEvent) => {
     setShapeType(e.target.value);
   };
@@ -402,21 +385,14 @@ export default function MainApp() {
           <Button type="primary" onClick={handleReset}>
             重置
           </Button>
-          <Radio.Group
-            onChange={onChangeShapeType}
-            value={shapeType}
-            buttonStyle="solid">
+          <Radio.Group onChange={onChangeShapeType} value={shapeType} buttonStyle="solid">
             <Radio.Button value={"line"}>line</Radio.Button>
             <Radio.Button value={"circle"}>circle</Radio.Button>
             <Radio.Button value={"rect"}>rect</Radio.Button>
           </Radio.Group>
         </div>
         <div className="white-board-content" ref={myWhiteBoard}>
-          <canvas
-            id="my-canvas"
-            ref={myCanvas}
-            style={{ cursor: cursorType }}
-          />
+          <canvas id="my-canvas" ref={myCanvas} style={{ cursor: cursorType }} />
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "antd";
 import "./main.css";
+
+import { Button } from "antd";
+import { useEffect, useRef, useState } from "react";
 
 export default function WhiteBoard() {
   const [canvasWidth, setCanvasWidth] = useState(600);
@@ -8,23 +9,7 @@ export default function WhiteBoard() {
 
   const myWhiteBoard = useRef<HTMLDivElement | null>(null);
   const myCanvas = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    if (myWhiteBoard.current) {
-      setCanvasWidth(myWhiteBoard.current.clientWidth);
-      setCanvasHeight(myWhiteBoard.current.clientHeight);
-    }
-    if (myCanvas.current) {
-      const ctx = myCanvas.current.getContext("2d");
-      if (!ctx) return;
-      initHandler(myCanvas.current, ctx);
-    }
-  }, []);
-
-  function initHandler(
-    myCanvas: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D
-  ) {
+  function initHandler(myCanvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     // Set Background Color
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
@@ -37,7 +22,7 @@ export default function WhiteBoard() {
     ctx.lineWidth = 4;
 
     const mouseDraw = {
-      mousedown: function (evt: MouseEvent) {
+      mousedown(evt: MouseEvent) {
         isDown = true;
         ctx.beginPath();
         const scrollTop = window.scrollY;
@@ -45,22 +30,21 @@ export default function WhiteBoard() {
         canvasY = evt.pageY - myCanvas.getBoundingClientRect().top - scrollTop;
         ctx.moveTo(canvasX, canvasY);
       },
-      mousemove: function (evt: MouseEvent) {
+      mousemove(evt: MouseEvent) {
         if (isDown !== false) {
           const scrollTop = window.scrollY;
           canvasX = evt.pageX - myCanvas.getBoundingClientRect().left;
-          canvasY =
-            evt.pageY - myCanvas.getBoundingClientRect().top - scrollTop;
+          canvasY = evt.pageY - myCanvas.getBoundingClientRect().top - scrollTop;
           ctx.lineTo(canvasX, canvasY);
           ctx.strokeStyle = "#000";
           ctx.stroke();
         }
       },
-      mouseup: function () {
+      mouseup() {
         isDown = false;
         ctx.closePath();
       },
-      mouseleave: function () {
+      mouseleave() {
         isDown = false;
         ctx.closePath();
       },
@@ -75,23 +59,30 @@ export default function WhiteBoard() {
     // Disable Page Move
     document.body.addEventListener(
       "touchmove",
-      function (evt) {
+      (evt: TouchEvent) => {
         evt.stopPropagation();
       },
-      false
+      false,
     );
   }
+
+  useEffect(() => {
+    if (myWhiteBoard.current) {
+      setCanvasWidth(myWhiteBoard.current.clientWidth);
+      setCanvasHeight(myWhiteBoard.current.clientHeight);
+    }
+    if (myCanvas.current) {
+      const ctx = myCanvas.current.getContext("2d");
+      if (!ctx) return;
+      initHandler(myCanvas.current, ctx);
+    }
+  }, []);
 
   const handleReset = () => {
     const ctx = myCanvas.current?.getContext("2d");
     if (!ctx) return;
     ctx.fillStyle = "#fff";
-    ctx.fillRect(
-      0,
-      0,
-      myCanvas.current?.width || canvasWidth,
-      myCanvas.current?.height || canvasHeight
-    );
+    ctx.fillRect(0, 0, myCanvas.current?.width || canvasWidth, myCanvas.current?.height || canvasHeight);
   };
 
   return (
@@ -102,12 +93,7 @@ export default function WhiteBoard() {
         </Button>
       </div>
       <div className="white-board-content" ref={myWhiteBoard}>
-        <canvas
-          id="my-canvas"
-          width={canvasWidth}
-          height={canvasHeight}
-          ref={myCanvas}
-        />
+        <canvas id="my-canvas" width={canvasWidth} height={canvasHeight} ref={myCanvas} />
       </div>
     </div>
   );
