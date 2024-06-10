@@ -13,6 +13,10 @@ const navList = [
     label: <Link to={"/name"}>姓名生成器</Link>,
     key: "/name",
   },
+  {
+    label: <Link to={"/animation"}>动画</Link>,
+    key: "/animation",
+  },
 ];
 
 const App: React.FC = () => {

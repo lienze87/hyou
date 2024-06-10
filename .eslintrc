@@ -38,25 +38,30 @@
       },
     ],
     "no-shadow": "off",
-    "no-param-reassign": [
-      "error",
-      {
-        "props": false
-      }
-    ],
+    "no-param-reassign": "off",
     "no-console": "off",
-    "no-plusplus": [
-      "error",
-      {
-        "allowForLoopAfterthoughts": true,
-      },
-    ],
+    "no-plusplus": "off",
     "react/display-name": "off",
     "import/no-cycle": "off", // TODO: remove
     "import/extensions": "off",
     "import/no-unresolved": "off",
     "import/order": "off",
     "import/prefer-default-export": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+      },
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+      },
+    ],
+    "no-use-before-define": "off",
     // 关闭variable必须全部大写规则
     "@typescript-eslint/naming-convention": [
       "error",
@@ -71,7 +76,6 @@
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-types": "off",
-    "@typescript-eslint/no-unused-vars": "warn",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
   },

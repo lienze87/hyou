@@ -3,6 +3,7 @@ import { createBrowserRouter, RouteObject } from "react-router-dom";
 import App from "@/layouts/index";
 import Board from "@/pages/board";
 import Name from "@/pages/name";
+import Tween from "@/pages/tween";
 
 const routes: RouteObject[] = [
   {
@@ -18,6 +19,10 @@ const routes: RouteObject[] = [
         element: <Name />,
       },
     ],
+  },
+  {
+    path: "animation",
+    element: <Tween />,
   },
 ];
 
