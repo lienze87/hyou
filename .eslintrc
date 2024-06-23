@@ -41,6 +41,7 @@
     "no-param-reassign": "off",
     "no-console": "off",
     "no-plusplus": "off",
+    "no-underscore-dangle": "off",
     "react/display-name": "off",
     "import/no-cycle": "off", // TODO: remove
     "import/extensions": "off",
