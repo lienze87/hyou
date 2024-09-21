@@ -14,6 +14,10 @@ const navList = [
     key: "/name",
   },
   {
+    label: <Link to={"/shape"}>SVG</Link>,
+    key: "/shape",
+  },
+  {
     label: <Link to={"/animation"}>动画</Link>,
     key: "/animation",
   },
@@ -22,13 +26,16 @@ const navList = [
 const App: React.FC = () => {
   const location = useLocation();
   const [activePath, setActivePath] = useState("/");
+
   useEffect(() => {
     setActivePath(location.pathname);
   }, [location]);
+
   return (
     <Layout style={{ minHeight: "100vh", width: "100vw" }}>
       <Header style={{ display: "flex", alignItems: "center" }}>
         <Menu
+          key={activePath}
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={[activePath]}
