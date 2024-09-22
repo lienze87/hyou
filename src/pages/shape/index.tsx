@@ -10,6 +10,8 @@ export default function Shape() {
   const [containerBeginY, setContainerBeginY] = useState(50);
   const [containerEndX, setContainerEndX] = useState(450);
   const [containerEndY, setContainerEndY] = useState(450);
+  const [percent, setPercent] = useState(0);
+  const [point, setPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const [curveStep, setCurveStep] = useState(0.01);
 
@@ -39,9 +41,34 @@ export default function Shape() {
     SVGPathRef.current?.setAttribute("d", pathData.join(" "));
   }
 
+  // 计算path元素指定百分比位置的坐标
+  function getPositionByPercent(percent: number) {
+    if (!SVGPathRef.current) return;
+    const realPercent = Math.min(Math.max(0, percent / 100), 1);
+    const pathLength = SVGPathRef.current.getTotalLength();
+
+    const position = SVGPathRef.current.getPointAtLength(pathLength * realPercent);
+    console.log(percent, position);
+    setPoint({ x: position.x, y: position.y });
+  }
+
   useEffect(() => {
     drawCurve({ x: containerBeginX, y: containerBeginY }, { x: containerEndX, y: containerEndY });
   }, [containerKey]);
+
+  useEffect(() => {
+    getPositionByPercent(percent);
+  }, [percent]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setPercent((percent + 1) % 100);
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   return (
     <div className="container">
@@ -95,6 +122,15 @@ export default function Shape() {
               autoComplete="off"
             ></Input>
           </Form.Item>
+          <Form.Item label="百分比">
+            <Input
+              value={percent}
+              onChange={(event) => {
+                setPercent(Number(event.target.value));
+              }}
+              autoComplete="off"
+            ></Input>
+          </Form.Item>
           <Form.Item>
             <Button type="primary" onClick={() => setContainerKey(containerKey + 1)}>
               重绘
@@ -111,6 +147,7 @@ export default function Shape() {
             </linearGradient>
           </defs>
           <path ref={SVGPathRef} stroke="url(#gradient)" strokeWidth="4" strokeLinecap="round" fill="none" />
+          <circle cx={point.x} cy={point.y} r="4" fill="red" />
         </svg>
       </div>
     </div>
