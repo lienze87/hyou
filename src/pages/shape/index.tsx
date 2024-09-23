@@ -15,9 +15,9 @@ export default function Shape() {
 
   const [curveStep, setCurveStep] = useState(0.01);
 
-  function cubicOut(t: number) {
-    return 1 - (1 - t) ** 3;
-  }
+  const circIn = (t: number) => {
+    return Math.sqrt(1 - t * t) - 1;
+  };
 
   function lerp(start: number, end: number, t: number) {
     return start + (end - start) * t;
@@ -28,8 +28,8 @@ export default function Shape() {
     let phase = 0;
     const pathData = [];
     while (phase < 1) {
-      const x = Math.round(end.x - lerp(begin.x, end.x, phase));
-      const y = Math.round(lerp(begin.y, end.y, cubicOut(phase)));
+      const x = Math.round(lerp(begin.x, end.x, phase));
+      const y = Math.round(end.y + lerp(begin.y, end.y, circIn(phase)));
       if (phase === 0) {
         pathData.push(`M${x},${y}`);
       } else {
@@ -60,15 +60,9 @@ export default function Shape() {
     getPositionByPercent(percent);
   }, [percent]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setPercent((percent + 1) % 100);
-    }, 1000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+  setTimeout(() => {
+    setPercent((percent + 1) % 100);
+  }, 1000);
 
   return (
     <div className="container">
