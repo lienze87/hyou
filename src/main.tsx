@@ -1,8 +1,22 @@
 import "./index.css";
 
 import ReactDOM from "react-dom/client";
-import { RouterProvider } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
-import router from "./router";
+import App from "./layouts/index";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(<RouterProvider router={router}></RouterProvider>);
+const env = import.meta.env.MODE || "development";
+const baseRouterName = env === "development" ? "/" : "/hyou";
+
+const root = document.getElementById("root")!;
+
+const renderApp = () => {
+  console.log(baseRouterName);
+  ReactDOM.createRoot(root).render(
+    <BrowserRouter basename={baseRouterName}>
+      <App />
+    </BrowserRouter>,
+  );
+};
+
+renderApp();

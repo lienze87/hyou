@@ -1,36 +1,65 @@
-import { createBrowserRouter, RouteObject } from "react-router-dom";
+import React, { lazy } from "react";
+import { BrowserRouterProps } from "react-router-dom";
 
-import App from "@/layouts/index";
-import Board from "@/pages/board";
-import Name from "@/pages/name";
-import Shape from "@/pages/shape";
-import Tween from "@/pages/tween";
+export interface IRouter {
+  path: string;
+  redirect?: string;
+  Component?: React.FC<BrowserRouterProps> | (() => any);
+  /**
+   * 当前路由是否全屏显示
+   */
+  isFullPage?: boolean;
+  /**
+   * meta未赋值 路由不显示到菜单中
+   */
+  meta?: {
+    title?: string;
+    Icon?: React.FC;
+    /**
+     * 侧边栏隐藏该路由
+     */
+    hidden?: boolean;
+    /**
+     * 单层路由
+     */
+    single?: boolean;
+  };
+  children?: IRouter[];
+}
 
-const routes: RouteObject[] = [
+const routes: IRouter[] = [
   {
     path: "/",
-    element: <App />,
-    children: [
-      {
-        index: true,
-        element: <Board />,
-      },
-      {
-        path: "name",
-        element: <Name />,
-      },
-      {
-        path: "shape",
-        element: <Shape />,
-      },
-    ],
+    redirect: "/board",
+  },
+  {
+    path: "board",
+    Component: lazy(() => import("@/pages/board")),
+    meta: {
+      title: "画板",
+    },
+  },
+  {
+    path: "name",
+    Component: lazy(() => import("@/pages/name")),
+    meta: {
+      title: "姓名生成器",
+    },
+  },
+  {
+    path: "shape",
+    Component: lazy(() => import("@/pages/shape")),
+    meta: {
+      title: "SVG",
+    },
   },
   {
     path: "animation",
-    element: <Tween />,
+    Component: lazy(() => import("@/pages/tween")),
+    meta: {
+      title: "动画",
+    },
   },
 ];
 
-const router = createBrowserRouter(routes);
-
-export default router;
+export default routes;
