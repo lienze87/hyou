@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "React Electron App",
+  "description": "React App",
   "main": "main.js",
   "author": "Lienze",
   "license": "MIT",
@@ -11,8 +11,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "start": "electron ."
+    "preview": "vite preview"
   },
   "dependencies": {
     "antd": "^5.17.2",
