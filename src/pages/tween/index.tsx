@@ -1,5 +1,3 @@
-import "./main.css";
-
 import { Application, Graphics, Point, Text } from "pixi.js";
 import { useEffect } from "react";
 
@@ -151,5 +149,5 @@ export default function Tween() {
     initApp();
   }, []);
 
-  return <div id="container"></div>;
+  return <div id="container" className="relative w-full h-full overflow-hidden"></div>;
 }

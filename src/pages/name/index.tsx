@@ -1,5 +1,3 @@
-import "./main.css";
-
 import { Button, Checkbox, Form, Input, Radio } from "antd";
 import { useState } from "react";
 
@@ -68,8 +66,7 @@ export default function NameGenerator() {
   }
 
   return (
-    <div className="container">
-      <h2>姓名生成器</h2>
+    <div className="container p-5">
       <Form name="basic" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} style={{ maxWidth: 600 }} autoComplete="off">
         <Form.Item label="固定字符">
           <Checkbox
@@ -135,7 +132,7 @@ export default function NameGenerator() {
           </Button>
         </Form.Item>
       </Form>
-      <div className="generated-name">{`${surname}${name}`}</div>
+      <div className="generated-name p-5">{`${surname}${name}`}</div>
     </div>
   );
 }

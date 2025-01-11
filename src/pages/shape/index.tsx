@@ -1,5 +1,3 @@
-import "./main.css";
-
 import { Button, Form, Input } from "antd";
 import { useEffect, useRef, useState } from "react";
 
@@ -65,8 +63,7 @@ export default function Shape() {
   }, 1000);
 
   return (
-    <div className="container">
-      <h2>SVG</h2>
+    <div className="container relative w-full h-full p-5 overflow-hidden">
       <div className="form-box">
         <Form
           name="basic"
@@ -132,7 +129,7 @@ export default function Shape() {
           </Form.Item>
         </Form>
       </div>
-      <div className="svg-box">
+      <div className="svg-box flex justify-center items-center shadow">
         <svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="gradient">

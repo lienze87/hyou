@@ -1,5 +1,3 @@
-import "./main.css";
-
 import type { RadioChangeEvent } from "antd";
 import { Button, Radio } from "antd";
 import { useEffect, useRef, useState } from "react";
@@ -61,7 +59,7 @@ function rgbToHex(r: number, g: number, b: number) {
   return `#${`000000${hex}`.slice(-6)}`;
 }
 
-export default function MainApp() {
+function Board() {
   const [shapeType, setShapeType] = useState("line");
   const [shapeList, updateShapeList] = useImmer<Array<Line | Circle | Rect>>([]);
   const [data, updateData] = useImmer({
@@ -378,23 +376,24 @@ export default function MainApp() {
   };
 
   return (
-    <div className="container">
-      <h2>画板</h2>
-      <div className="white-board">
-        <div className="action-bar">
-          <Button type="primary" onClick={handleReset}>
-            重置
-          </Button>
+    <div className="container p-5">
+      <div className="relative mt-2 mb-2">
+        <div className="action-bar flex justify-start gap-2 w-full mb-2">
           <Radio.Group onChange={onChangeShapeType} value={shapeType} buttonStyle="solid">
             <Radio.Button value={"line"}>line</Radio.Button>
             <Radio.Button value={"circle"}>circle</Radio.Button>
             <Radio.Button value={"rect"}>rect</Radio.Button>
           </Radio.Group>
+          <Button type="primary" onClick={handleReset}>
+            重置
+          </Button>
         </div>
-        <div className="white-board-content" ref={myWhiteBoard}>
-          <canvas id="my-canvas" ref={myCanvas} style={{ cursor: cursorType }} />
+        <div className="white-board-content relative border border-[#ccc] rounded bg-white" ref={myWhiteBoard}>
+          <canvas id="my-canvas" className="cursor-crosshair" ref={myCanvas} style={{ cursor: cursorType }} />
         </div>
       </div>
     </div>
   );
 }
+
+export default Board;
