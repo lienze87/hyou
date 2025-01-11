@@ -13,10 +13,7 @@
     "plugin:react-hooks/recommended",
     "plugin:prettier/recommended",
   ],
-  "ignorePatterns": [
-    "dist",
-    ".eslintrc"
-  ],
+  "ignorePatterns": ["dist", ".eslintrc"],
   "parserOptions": {
     "parser": "@typescript-eslint/parser",
     "sourceType": "module",
@@ -25,16 +22,12 @@
       "jsx": true,
     },
   },
-  "plugins": [
-    "react-refresh",
-    "@typescript-eslint",
-    "simple-import-sort"
-  ],
+  "plugins": ["react-refresh", "@typescript-eslint", "simple-import-sort"],
   "rules": {
     "react-refresh/only-export-components": [
       "warn",
       {
-        "allowConstantExport": true
+        "allowConstantExport": true,
       },
     ],
     "no-shadow": "off",
@@ -43,11 +36,13 @@
     "no-plusplus": "off",
     "no-underscore-dangle": "off",
     "react/display-name": "off",
-    "import/no-cycle": "off", // TODO: remove
+
     "import/extensions": "off",
     "import/no-unresolved": "off",
-    "import/order": "off",
+    "import/no-extraneous-dependencies": "off",
     "import/prefer-default-export": "off",
+    "import/no-relative-packages": "off",
+
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -68,9 +63,7 @@
       "error",
       {
         "selector": "variable",
-        "modifiers": [
-          "const"
-        ],
+        "modifiers": ["const"],
         "format": null,
       },
     ],
