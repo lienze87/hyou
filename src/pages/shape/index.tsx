@@ -6,8 +6,8 @@ export default function Shape() {
   const [containerKey, setContainerKey] = useState(0);
   const [containerBeginX, setContainerBeginX] = useState(50);
   const [containerBeginY, setContainerBeginY] = useState(50);
-  const [containerEndX, setContainerEndX] = useState(450);
-  const [containerEndY, setContainerEndY] = useState(450);
+  const [containerEndX, setContainerEndX] = useState(400);
+  const [containerEndY, setContainerEndY] = useState(400);
   const [percent, setPercent] = useState(0);
   const [point, setPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -46,7 +46,7 @@ export default function Shape() {
     const pathLength = SVGPathRef.current.getTotalLength();
 
     const position = SVGPathRef.current.getPointAtLength(pathLength * realPercent);
-    console.log(percent, position);
+    // console.log(percent, position);
     setPoint({ x: position.x, y: position.y });
   }
 
@@ -63,15 +63,9 @@ export default function Shape() {
   }, 1000);
 
   return (
-    <div className="container relative w-full h-full p-5 overflow-hidden">
-      <div className="form-box">
-        <Form
-          name="basic"
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 20 }}
-          style={{ maxWidth: 500 }}
-          autoComplete="off"
-        >
+    <div className="relative flex justify-between w-full h-full p-5 overflow-hidden">
+      <div className="form-box w-[500px]">
+        <Form className="w-full" name="basic" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} autoComplete="off">
           <Form.Item label="起点">
             <Input
               value={containerBeginX}

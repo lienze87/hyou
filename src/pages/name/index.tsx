@@ -66,7 +66,7 @@ export default function NameGenerator() {
   }
 
   return (
-    <div className="container p-5">
+    <div className="p-5">
       <Form name="basic" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} style={{ maxWidth: 600 }} autoComplete="off">
         <Form.Item label="固定字符">
           <Checkbox

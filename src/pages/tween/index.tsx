@@ -149,5 +149,5 @@ export default function Tween() {
     initApp();
   }, []);
 
-  return <div id="container" className="relative w-full h-full overflow-hidden"></div>;
+  return <div id="container" className="relative w-full h-full m-3 overflow-hidden"></div>;
 }

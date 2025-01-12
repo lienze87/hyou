@@ -376,7 +376,7 @@ function Board() {
   };
 
   return (
-    <div className="container p-5">
+    <div className="p-5">
       <div className="relative mt-2 mb-2">
         <div className="action-bar flex justify-start gap-2 w-full mb-2">
           <Radio.Group onChange={onChangeShapeType} value={shapeType} buttonStyle="solid">

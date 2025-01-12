@@ -76,7 +76,7 @@ const AppRouter = () => {
           className="w-full"
         ></Menu>
       </Header>
-      <Content className="pl-5 pr-5">
+      <Content className="container">
         <Suspense
           fallback={
             <div className="w-full h-full">
