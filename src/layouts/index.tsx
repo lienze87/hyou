@@ -65,7 +65,7 @@ const AppRouter = () => {
       <Content className="container">
         <Suspense
           fallback={
-            <div className="w-full h-full">
+            <div className="w-full h-full flex justify-center items-center">
               <Spin />
             </div>
           }
