@@ -40,13 +40,6 @@ const routes: IRouter[] = [
     },
   },
   {
-    path: "/name",
-    Component: lazy(() => import("@/pages/name")),
-    meta: {
-      title: "姓名生成器",
-    },
-  },
-  {
     path: "/shape",
     Component: lazy(() => import("@/pages/shape")),
     meta: {
