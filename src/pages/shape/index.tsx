@@ -1,130 +1,108 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Select } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { useImmer } from "use-immer";
+
+import { useCurve } from "@/hooks/useCurve";
+import { Point } from "@/utils";
+
+type CurveType = "circIn" | "linear" | "quadratic" | "bounce";
+
+interface FormState {
+  width: number;
+  height: number;
+  curveType: CurveType;
+  curveStep: number;
+  percent: number;
+}
 
 export default function Shape() {
   const SVGPathRef = useRef<SVGPathElement | null>(null);
-  const [containerKey, setContainerKey] = useState(0);
-  const [containerBeginX, setContainerBeginX] = useState(50);
-  const [containerBeginY, setContainerBeginY] = useState(50);
-  const [containerEndX, setContainerEndX] = useState(400);
-  const [containerEndY, setContainerEndY] = useState(400);
-  const [percent, setPercent] = useState(0);
-  const [point, setPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [formData, updateFormData] = useImmer<FormState>({
+    width: 500,
+    height: 500,
+    curveType: "circIn",
+    curveStep: 0.01,
+    percent: 0,
+  });
+  const [point, setPoint] = useState<Point>({ x: 0, y: 0 });
 
-  const [curveStep, setCurveStep] = useState(0.01);
+  const { generatePathData, getPointAtPercent } = useCurve();
 
-  const circIn = (t: number) => {
-    return Math.sqrt(1 - t * t) - 1;
+  useEffect(() => {
+    if (!SVGPathRef.current) return;
+    const pathData = generatePathData(
+      { x: 0, y: 0 },
+      {
+        x: formData.width,
+        y: formData.height,
+      },
+      formData.curveType,
+      formData.curveStep,
+    );
+    SVGPathRef.current.setAttribute("d", pathData);
+  }, [formData, generatePathData]);
+
+  useEffect(() => {
+    if (!SVGPathRef.current) return;
+    const position = getPointAtPercent(SVGPathRef.current, formData.percent);
+    setPoint({ x: position.x, y: position.y });
+  }, [formData.percent, getPointAtPercent]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      updateFormData((draft) => {
+        draft.percent = (draft.percent + 1) % 100;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [updateFormData]);
+
+  const updateFormField = (field: keyof FormState, value: number | CurveType) => {
+    updateFormData((draft) => {
+      (draft[field as keyof FormState] as any) = value;
+    });
   };
 
-  function lerp(start: number, end: number, t: number) {
-    return start + (end - start) * t;
-  }
-
-  function drawCurve(begin: { x: number; y: number }, end: { x: number; y: number }) {
-    if (!SVGPathRef.current) return;
-    let phase = 0;
-    const pathData = [];
-    while (phase < 1) {
-      const x = Math.round(lerp(begin.x, end.x, phase));
-      const y = Math.round(end.y + lerp(begin.y, end.y, circIn(phase)));
-      if (phase === 0) {
-        pathData.push(`M${x},${y}`);
-      } else {
-        pathData.push(`L${x},${y}`);
-      }
-      phase += curveStep;
-    }
-
-    SVGPathRef.current?.setAttribute("d", pathData.join(" "));
-  }
-
-  // 计算path元素指定百分比位置的坐标
-  function getPositionByPercent(percent: number) {
-    if (!SVGPathRef.current) return;
-    const realPercent = Math.min(Math.max(0, percent / 100), 1);
-    const pathLength = SVGPathRef.current.getTotalLength();
-
-    const position = SVGPathRef.current.getPointAtLength(pathLength * realPercent);
-    // console.log(percent, position);
-    setPoint({ x: position.x, y: position.y });
-  }
-
-  useEffect(() => {
-    drawCurve({ x: containerBeginX, y: containerBeginY }, { x: containerEndX, y: containerEndY });
-  }, [containerKey]);
-
-  useEffect(() => {
-    getPositionByPercent(percent);
-  }, [percent]);
-
-  setTimeout(() => {
-    setPercent((percent + 1) % 100);
-  }, 1000);
-
   return (
-    <div className="relative flex justify-between w-full h-full p-5 overflow-hidden">
-      <div className="form-box w-[500px]">
-        <Form className="w-full" name="basic" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} autoComplete="off">
-          <Form.Item label="起点">
-            <Input
-              value={containerBeginX}
-              onChange={(event) => {
-                setContainerBeginX(Number(event.target.value));
-              }}
-              autoComplete="off"
-            ></Input>
-            <Input
-              value={containerBeginY}
-              onChange={(event) => {
-                setContainerBeginY(Number(event.target.value));
-              }}
-              autoComplete="off"
-            ></Input>
-          </Form.Item>
-          <Form.Item label="终点">
-            <Input
-              value={containerEndX}
-              onChange={(event) => {
-                setContainerEndX(Number(event.target.value));
-              }}
-              autoComplete="off"
-            ></Input>
-            <Input
-              value={containerEndY}
-              onChange={(event) => {
-                setContainerEndY(Number(event.target.value));
-              }}
-              autoComplete="off"
-            ></Input>
+    <div className="relative w-full h-full p-5 overflow-hidden">
+      <div className="form-box w-full mb-3">
+        <Form className="w-full" name="basic" layout="inline" autoComplete="off">
+          <Form.Item label="曲线类型">
+            <Select
+              style={{ width: 120 }}
+              value={formData.curveType}
+              onChange={(value: CurveType) => updateFormField("curveType", value)}
+              options={[
+                { value: "circIn", label: "圆形缓动" },
+                { value: "linear", label: "线性" },
+                { value: "quadratic", label: "二次方" },
+                { value: "bounce", label: "弹跳" },
+              ]}
+            />
           </Form.Item>
           <Form.Item label="点数">
             <Input
-              value={curveStep}
-              onChange={(event) => {
-                setCurveStep(Number(event.target.value));
-              }}
+              value={formData.curveStep}
+              onChange={(e) => updateFormField("curveStep", Number(e.target.value))}
               autoComplete="off"
-            ></Input>
+            />
           </Form.Item>
           <Form.Item label="百分比">
             <Input
-              value={percent}
-              onChange={(event) => {
-                setPercent(Number(event.target.value));
-              }}
+              value={formData.percent}
+              onChange={(e) => updateFormField("percent", Number(e.target.value))}
               autoComplete="off"
-            ></Input>
+            />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" onClick={() => setContainerKey(containerKey + 1)}>
+            <Button type="primary" onClick={() => updateFormField("percent", 0)}>
               重绘
             </Button>
           </Form.Item>
         </Form>
       </div>
-      <div className="svg-box flex justify-center items-center shadow">
-        <svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <div className="svg-box flex justify-center items-center p-2 bg-slate-300 shadow">
+        <svg width={formData.width} height={formData.height} viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="gradient">
               <stop offset="0%" stopColor="blue" />
