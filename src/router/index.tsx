@@ -33,28 +33,28 @@ const routes: IRouter[] = [
     redirect: "/board",
   },
   {
-    path: "board",
+    path: "/board",
     Component: lazy(() => import("@/pages/board")),
     meta: {
       title: "画板",
     },
   },
   {
-    path: "name",
+    path: "/name",
     Component: lazy(() => import("@/pages/name")),
     meta: {
       title: "姓名生成器",
     },
   },
   {
-    path: "shape",
+    path: "/shape",
     Component: lazy(() => import("@/pages/shape")),
     meta: {
       title: "SVG",
     },
   },
   {
-    path: "animation",
+    path: "/animation",
     Component: lazy(() => import("@/pages/tween")),
     meta: {
       title: "动画",

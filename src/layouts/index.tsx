@@ -41,24 +41,10 @@ const AppRouter = () => {
   const location = useLocation();
   const [activePath, setActivePath] = useState("/");
 
-  const navList = [
-    {
-      label: <Link to={"/board"}>画板</Link>,
-      key: "/board",
-    },
-    {
-      label: <Link to={"/name"}>姓名生成器</Link>,
-      key: "/name",
-    },
-    {
-      label: <Link to={"/shape"}>SVG</Link>,
-      key: "/shape",
-    },
-    {
-      label: <Link to={"/animation"}>动画</Link>,
-      key: "/animation",
-    },
-  ];
+  const navList = routers.map((route) => ({
+    label: <Link to={route.path}>{route.meta?.title}</Link>,
+    key: route.path,
+  }));
 
   useEffect(() => {
     setActivePath(location.pathname);
