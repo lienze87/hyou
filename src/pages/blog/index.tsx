@@ -166,6 +166,8 @@ const BlogList: React.FC = () => {
       <Modal
         title={editingBlog ? "编辑博客" : "新建博客"}
         open={isModalVisible}
+        okText={editingBlog? "更新" : "创建"}
+        cancelText="取消"
         onOk={handleSubmit}
         onCancel={() => setIsModalVisible(false)}
       >

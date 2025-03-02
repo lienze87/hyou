@@ -64,7 +64,7 @@ export default function Tween() {
           point.x = Math.ceil(ele.x * functionRectWidth);
           point.y = Math.ceil(ele.y * functionRectHeight);
           functionRect.addChild(point);
-          console.log(point.y, ele.y);
+          // console.log(point.y, ele.y);
         }
       });
     }

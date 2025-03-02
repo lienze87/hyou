@@ -68,7 +68,6 @@ const routes: IRouter[] = [
       title: "SVG",
     },
   },
-
 ];
 
 export default routes;

@@ -1,6 +1,6 @@
-import { DeleteOutlined,EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, message, Modal, Popconfirm,Table } from 'antd';
-import React, { useEffect,useState } from 'react';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Form, Input, message, Modal, Popconfirm, Table } from "antd";
+import React, { useEffect, useState } from "react";
 
 interface User {
   id: number;
@@ -18,7 +18,7 @@ const UserList: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/user');
+      const response = await fetch("/api/user");
       const result = await response.json();
       if (result.code === 200) {
         setUsers(result.data);
@@ -26,7 +26,7 @@ const UserList: React.FC = () => {
         message.error(result.message);
       }
     } catch (error) {
-      message.error('获取用户列表失败');
+      message.error("获取用户列表失败");
     }
   };
 
@@ -49,76 +49,70 @@ const UserList: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       const response = await fetch(`/api/user/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       const result = await response.json();
       if (result.code === 200) {
-        message.success('删除成功');
+        message.success("删除成功");
         fetchUsers();
       } else {
         message.error(result.message);
       }
     } catch (error) {
-      message.error('删除失败');
+      message.error("删除失败");
     }
   };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      const url = editingUser
-        ? `/api/user/${editingUser.id}`
-        : '/api/user/register';
-      const method = editingUser ? 'PUT' : 'POST';
+      const url = editingUser ? `/api/user/${editingUser.id}` : "/api/user/register";
+      const method = editingUser ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
 
       const result = await response.json();
       if (result.code === 200) {
-        message.success(editingUser ? '更新成功' : '创建成功');
+        message.success(editingUser ? "更新成功" : "创建成功");
         setIsModalVisible(false);
         fetchUsers();
       } else {
         message.error(result.message);
       }
     } catch (error) {
-      message.error('提交失败');
+      message.error("提交失败");
     }
   };
 
   const columns = [
     {
-      title: '用户名',
-      dataIndex: 'username',
-      key: 'username',
+      title: "用户名",
+      dataIndex: "username",
+      key: "username",
     },
     {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
+      title: "邮箱",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: "创建时间",
+      dataIndex: "createdAt",
+      key: "createdAt",
       render: (text: string) => new Date(text).toLocaleString(),
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       render: (_: any, record: User) => (
         <div className="space-x-4">
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
             编辑
           </Button>
           <Popconfirm
@@ -157,37 +151,29 @@ const UserList: React.FC = () => {
       />
 
       <Modal
-        title={editingUser ? '编辑用户' : '新建用户'}
+        title={editingUser ? "编辑用户" : "新建用户"}
         open={isModalVisible}
-        okText={editingUser? '更新' : '创建'}
+        okText={editingUser ? "更新" : "创建"}
         cancelText="取消"
         onOk={handleSubmit}
         onCancel={() => setIsModalVisible(false)}
       >
         <Form form={form} layout="vertical">
-          <Form.Item
-            name="username"
-            label="用户名"
-            rules={[{ required: true, message: '请输入用户名' }]}
-          >
+          <Form.Item name="username" label="用户名" rules={[{ required: true, message: "请输入用户名" }]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="email"
             label="邮箱"
             rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' },
+              { required: true, message: "请输入邮箱" },
+              { type: "email", message: "请输入有效的邮箱地址" },
             ]}
           >
             <Input />
           </Form.Item>
           {!editingUser && (
-            <Form.Item
-              name="password"
-              label="密码"
-              rules={[{ required: true, message: '请输入密码' }]}
-            >
+            <Form.Item name="password" label="密码" rules={[{ required: true, message: "请输入密码" }]}>
               <Input.Password />
             </Form.Item>
           )}
