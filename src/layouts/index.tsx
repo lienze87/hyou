@@ -53,6 +53,20 @@ const AppRouter = () => {
   return (
     <Layout className="w-[100vw] min-h-[100vh]">
       <Header className="flex items-center">
+        <div className="logo-container flex items-center gap-3 flex-1">
+          <i className="w-[28px]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M2 26V2H26L2 26ZM2 26H26"
+                stroke="#e5e0ce"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </i>
+          <h1 className="text-xl font-bold text-[#e5e0ce] m-0">Hyou</h1>
+        </div>
         <Menu
           key={activePath}
           theme="dark"
