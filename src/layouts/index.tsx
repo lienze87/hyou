@@ -41,13 +41,20 @@ const AppRouter = () => {
   const location = useLocation();
   const [activePath, setActivePath] = useState("/");
 
-  const navList = routers.map((route) => ({
-    label: <Link to={route.path}>{route.meta?.title}</Link>,
-    key: route.path,
-  }));
+  const navList = routers
+    .filter((route) => !route.meta?.hidden)
+    .map((route) => ({
+      label: <Link to={route.path}>{route.meta?.title}</Link>,
+      key: route.path,
+    }));
 
   useEffect(() => {
-    setActivePath(location.pathname);
+    // 如果是博客详情页，激活博客菜单
+    if (location.pathname.startsWith("/blog/")) {
+      setActivePath("/blog");
+    } else {
+      setActivePath(location.pathname);
+    }
   }, [location]);
 
   return (
@@ -76,10 +83,10 @@ const AppRouter = () => {
           className="w-full"
         ></Menu>
       </Header>
-      <Content className="container">
+      <Content className="flex justify-center">
         <Suspense
           fallback={
-            <div className="w-full h-full flex justify-center items-center">
+            <div className="self-center w-full h-full flex justify-center items-center">
               <Spin />
             </div>
           }
