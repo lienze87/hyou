@@ -16,10 +16,10 @@ class Comment extends Model {
 
 Comment.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+    uuid: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
     },
     content: {
       type: DataTypes.TEXT,

@@ -3,7 +3,7 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Blog extends Model {
-  declare id: number;
+  declare uuid: string;
   declare title: string;
   declare content: string;
   declare authorId: number;
@@ -13,10 +13,10 @@ class Blog extends Model {
 
 Blog.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+    uuid: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
     },
     title: {
       type: DataTypes.STRING,
@@ -30,8 +30,8 @@ Blog.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users',
-        key: 'id',
+        model: "Users",
+        key: "id",
       },
     },
   },
