@@ -2,9 +2,9 @@ import { Layout, Menu, Spin } from "antd";
 import React, { memo, Suspense, useEffect, useState } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
+import Uploader from "@/components/uploader";
 import routers, { IRouter } from "@/router";
 import { resolve } from "@/utils/path";
-
 const { Header, Content } = Layout;
 type RenderRoutes = (routes: IRouter[], parentPath?: string, breadcrumbs?: string[]) => React.ReactNode[];
 
@@ -59,29 +59,34 @@ const AppRouter = () => {
 
   return (
     <Layout className="w-[100vw] min-h-[100vh]">
-      <Header className="flex items-center">
-        <div className="logo-container flex items-center gap-3 flex-1">
-          <i className="w-[28px]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <path
-                d="M2 26V2H26L2 26ZM2 26H26"
-                stroke="#e5e0ce"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </i>
-          <h1 className="text-xl font-bold text-[#e5e0ce] m-0">Hyou</h1>
+      <Header className="flex justify-between items-center">
+        <div className="header-left flex items-center">
+          <div className="logo-container flex items-center gap-3 flex-1">
+            <i className="w-[28px]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path
+                  d="M2 26V2H26L2 26ZM2 26H26"
+                  stroke="#e5e0ce"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </i>
+            <h1 className="text-xl font-bold text-[#e5e0ce] m-0">Hyou</h1>
+          </div>
+          <Menu
+            key={activePath}
+            theme="dark"
+            mode="horizontal"
+            defaultSelectedKeys={[activePath]}
+            items={navList}
+            className="w-full"
+          ></Menu>
         </div>
-        <Menu
-          key={activePath}
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={[activePath]}
-          items={navList}
-          className="w-full"
-        ></Menu>
+        <div className="header-right flex items-center">
+          <Uploader />
+        </div>
       </Header>
       <Content className="flex justify-center">
         <Suspense
