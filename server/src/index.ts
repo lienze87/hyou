@@ -2,9 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 
 import sequelize from "./config/database";
-import blog from "./router/blog";
 import chat from "./router/chat";
-import comment from "./router/comment";
 import user from "./router/user";
 
 const app = new Hono();
@@ -24,8 +22,6 @@ app.get("/health", async (c) => {
 
 // 注册路由
 app.route("/chat", chat);
-app.route("/blog", blog);
-app.route("/comment", comment);
 app.route("/user", user);
 
 // 启动服务器

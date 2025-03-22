@@ -9,7 +9,7 @@ const app = new Hono();
 app.get("/", async (c) => {
   try {
     const users = await User.findAll({
-      attributes: { exclude: ["password"] },
+      attributes: { exclude: ["id", "password"] },
       order: [["createdAt", "DESC"]],
     });
 
@@ -63,7 +63,7 @@ app.post("/register", async (c) => {
       message: "注册成功",
       code: 200,
       user: {
-        id: user.id,
+        uuid: user.uuid,
         username: user.username,
         email: user.email,
       },
@@ -99,7 +99,7 @@ app.post("/login", async (c) => {
       message: "登录成功",
       code: 200,
       user: {
-        id: user.id,
+        uuid: user.uuid,
         username: user.username,
         email: user.email,
       },
@@ -110,10 +110,10 @@ app.post("/login", async (c) => {
 });
 
 // 删除用户
-app.delete("/:id", async (c) => {
+app.delete("/:uuid", async (c) => {
   try {
-    const id = c.req.param("id");
-    const user = await User.findByPk(id);
+    const uuid = c.req.param("uuid");
+    const user = await User.findOne({ where: { uuid } });
 
     if (!user) {
       return c.json({
@@ -140,13 +140,13 @@ app.delete("/:id", async (c) => {
 });
 
 // 修改用户信息
-app.put("/:id", async (c) => {
+app.put("/:uuid", async (c) => {
   try {
-    const id = c.req.param("id");
+    const uuid = c.req.param("uuid");
     const { username, email } = await c.req.json();
 
     // 查找要修改的用户
-    const user = await User.findByPk(id);
+    const user = await User.findOne({ where: { uuid } });
     if (!user) {
       return c.json({
         code: 404,
@@ -186,7 +186,7 @@ app.put("/:id", async (c) => {
       code: 200,
       message: "更新用户信息成功",
       data: {
-        id: user.id,
+        uuid: user.uuid,
         username: user.username,
         email: user.email,
       },

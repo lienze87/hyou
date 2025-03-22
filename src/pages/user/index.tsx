@@ -146,7 +146,7 @@ const UserList: React.FC = () => {
         pagination={{
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条记录`,
+          showTotal: (total) => `共 ${total} 条`,
         }}
       />
 
