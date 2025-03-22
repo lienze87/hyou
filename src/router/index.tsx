@@ -30,29 +30,7 @@ export interface IRouter {
 const routes: IRouter[] = [
   {
     path: "/",
-    redirect: "/user",
-  },
-  {
-    path: "/user",
-    Component: lazy(() => import("@/pages/user")),
-    meta: {
-      title: "用户",
-    },
-  },
-  {
-    path: "/blog",
-    Component: lazy(() => import("@/pages/blog")),
-    meta: {
-      title: "博客",
-    },
-  },
-  {
-    path: "/blog/:id",
-    Component: lazy(() => import("@/pages/blog/[id]")),
-    meta: {
-      title: "博客详情",
-      hidden: true,
-    },
+    redirect: "/board",
   },
   {
     path: "/board",
@@ -62,10 +40,18 @@ const routes: IRouter[] = [
     },
   },
   {
-    path: "/shape",
-    Component: lazy(() => import("@/pages/shape")),
+    path: "/user",
+    Component: lazy(() => import("@/pages/user")),
     meta: {
-      title: "SVG",
+      title: "用户",
+    },
+  },
+  {
+    path: "*",
+    Component: lazy(() => import("@/pages/404")),
+    meta: {
+      title: "404",
+      hidden: true,
     },
   },
 ];
