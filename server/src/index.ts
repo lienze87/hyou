@@ -1,9 +1,15 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 import sequelize from "./config/database";
 import chat from "./router/chat";
+import common from "./router/common";
 import user from "./router/user";
+
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = dirname(__filename);
 
 const app = new Hono();
 
@@ -23,6 +29,7 @@ app.get("/health", async (c) => {
 // 注册路由
 app.route("/chat", chat);
 app.route("/user", user);
+app.route("/", common);
 
 // 启动服务器
 const port = 3008;

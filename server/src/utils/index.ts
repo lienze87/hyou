@@ -1,10 +1,5 @@
 import { exec } from "child_process";
 import os from "os";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-export const __dirname = dirname(__filename);
 
 export const colors = {
   reset: "\x1b[0m",
